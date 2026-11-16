@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="NEXADE — мультиагентная рабочая среда для ваших проектов: роли и сценарии, общая память, базы данных, серверы, DevTrack и проверка изменений в одном окне.">
+  <meta name="theme-color" content="#f7f9fb">
+  <title>NEXADE — ваша команда AI. Ваша рабочая среда.</title>
+  <style>
+    :root{--ink:#233649;--muted:#697985;--teal:#126b64;--teal-dark:#0c514d;--mint:#e5f3ef;--line:#dce5e7;--canvas:#f7f9fb;--lavender:#eeedf9;--rose:#faedf3;--radius:24px;--width:1160px}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;scroll-padding-top:100px}
+    body{margin:0;background:var(--canvas);color:var(--ink);font-family:"Segoe UI",Arial,sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+    button,a{-webkit-tap-highlight-color:transparent}
+    button,input{font:inherit}
+    button{cursor:pointer}
+    button:disabled{cursor:default}
+    a{color:inherit;text-decoration:none}
+    button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #7a78cf;outline-offset:5px}
+    img{max-width:100%;display:block}
+    .icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+    .wrap{width:min(var(--width),calc(100% - 64px));margin:auto}
+    .preview-note{min-height:31px;display:flex;align-items:center;justify-content:center;gap:8px;background:#e8efed;color:#59746e;font-size:11px;font-weight:500;letter-spacing:.04em;padding:5px 20px;text-align:center}
+    .preview-dot,.status-dot{width:6px;height:6px;border-radius:50%;background:#4c9988;display:inline-block;flex-shrink:0}
+    header{height:84px;position:sticky;top:0;z-index:20;background:#f7f9fbeb;backdrop-filter:blur(18px);border-bottom:1px solid #dce5e780}
+    .nav{height:100%;display:flex;align-items:center;justify-content:space-between;gap:30px}
+    .wordmark{width:159px;height:53px;object-fit:contain}
+    .nav-links{display:flex;align-items:center;gap:31px;font-size:13px;font-weight:500}
+    .nav-links>a:not(.btn){color:#5e6e7b}
+    .nav-links>a:hover{color:var(--teal)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:1px solid transparent;border-radius:10px;font-size:14px;font-weight:600;padding:13px 21px;line-height:1.5;transition:background .2s,transform .2s,box-shadow .2s}
+    .btn:hover{transform:translateY(-2px)}
+    .btn-primary{background:var(--teal);color:white;box-shadow:0 5px 13px #126b6412}
+    .btn-primary:hover{background:var(--teal-dark);box-shadow:0 7px 19px #126b6420}
+    .btn-secondary{background:#fff;border-color:#d8e3e3;color:var(--ink)}
+    .btn-secondary:hover{border-color:#93bdb7;background:#f6faf9}
+    .btn-small{font-size:12px;padding:9px 14px;border-radius:8px}
+    .menu-toggle{display:none;border:1px solid var(--line);background:#fff;border-radius:8px;padding:9px;color:var(--ink)}
+    .hero{text-align:center;padding:63px 0 0;position:relative;isolation:isolate}
+    .hero>.wrap{width:min(1600px,calc(100% - 64px))}
+    .hero:before{content:"";position:absolute;inset:-84px 0 auto;height:930px;z-index:-1;background:radial-gradient(ellipse at 18% 49%,#e4f1ed 0,transparent 44%),radial-gradient(ellipse at 87% 55%,#eeebf8 0,transparent 42%);pointer-events:none}
+    .eyebrow{color:var(--teal);font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;display:flex;align-items:center;gap:9px}
+    .hero .eyebrow{justify-content:center}
+    .release-pill{display:inline-flex;align-items:center;gap:9px;padding:6px 12px;border:1px solid #d9e8e1;background:#f7fcf9;border-radius:99px;color:#526e63;font-size:11px;line-height:1.5;letter-spacing:.02em}
+    .release-pill span:last-child{border-left:1px solid #ccdcd5;padding-left:9px;color:#829088}
+    h1{margin:22px 0 19px;font-size:clamp(43px,5.1vw,70px);letter-spacing:-.055em;line-height:1.1;font-weight:700}
+    h1 .hero-line{display:block}
+    h1 em{font-style:normal;color:var(--teal)}
+    .hero-lead{max-width:630px;font-size:17px;line-height:1.7;color:var(--muted);margin:0 auto}
+    .hero-actions{display:flex;align-items:center;justify-content:center;gap:12px;margin:28px 0 14px}
+    .hero-meta{font-size:11px;color:#82918f;display:flex;align-items:center;justify-content:center;gap:10px}
+    .hero-meta .icon{width:13px;height:13px}
+    .hero-meta i{font-style:normal;color:#bac5c2}
+    .showcase{margin-top:42px;text-align:left;position:relative}
+    .screen-tabs{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:3px;margin:0 auto 17px;width:fit-content;max-width:100%;padding:4px;background:#e9eeefaa;border:1px solid #dce4e5;border-radius:10px}
+    .screen-tab{display:flex;align-items:center;gap:8px;border:0;border-radius:7px;background:transparent;color:#70808d;font-size:12px;padding:8px 16px;white-space:nowrap}
+    .screen-tab .icon{width:15px;height:15px}
+    .screen-tab[aria-selected="true"]{background:#fff;color:var(--teal);box-shadow:0 1px 5px #2435490c}
+    .screen-frame{overflow:hidden;border:1px solid #cfdcde;border-radius:15px;background:#fff;box-shadow:0 24px 70px -24px #2c515c30,0 2px 5px #23364905;position:relative}
+    .screen-top{height:34px;border-bottom:1px solid #e2e8ec;background:#f5f8f9;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 15px;font-size:10px;color:#7c8b95}
+    .window-dots{display:flex;align-items:center;gap:5px}
+    .window-dots i{width:6px;height:6px;display:block;border-radius:50%;background:#d8e1e4}
+    .screen-zoom{border:0;background:transparent;color:#75858f;display:flex;align-items:center;gap:5px;font-size:10px;padding:3px}
+    .screen-zoom .icon{width:13px;height:13px}
+    .screen-image-button{display:block;width:100%;border:0;padding:0;background:#f3f6fa;cursor:zoom-in}
+    .screen-image{width:100%;aspect-ratio:16/9;object-fit:contain}
+    .screen-caption{display:flex;justify-content:space-between;align-items:center;gap:20px;font-size:11px;color:#829099;padding:12px 3px 0}
+    .screen-caption strong{font-weight:500;color:#647783}
+    .principles{display:flex;justify-content:center;align-items:center;gap:40px;margin:35px 0 0;padding:0 0 54px;border-bottom:1px solid var(--line);font-size:12px;color:#75858e}
+    .principles span{display:flex;align-items:center;gap:8px}
+    .principles .icon{width:16px;height:16px;color:#5b8d82}
+    section{padding:90px 0;scroll-margin-top:10px}
+    .section-head{margin:0 0 34px;display:flex;align-items:flex-end;justify-content:space-between;gap:40px}
+    h2{font-size:clamp(30px,3vw,43px);font-weight:650;line-height:1.19;letter-spacing:-.035em;margin:11px 0 0}
+    .section-head>p{color:var(--muted);font-size:14px;max-width:340px;margin:0 0 3px}
+    .features{display:grid;grid-template-columns:1.15fr 1fr;gap:19px}
+    .feature{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:33px;overflow:hidden}
+    .feature h3{font-size:23px;line-height:1.25;letter-spacing:-.03em;font-weight:650;margin:17px 0 11px}
+    .feature p{font-size:14px;color:var(--muted);line-height:1.7;margin:0;max-width:410px}
+    .feature .feature-icon{width:35px;height:35px;border:1px solid #cde3dc;border-radius:10px;background:#eff8f4;display:flex;align-items:center;justify-content:center;color:var(--teal)}
+    .devtrack-feature{background:linear-gradient(145deg,#f4faf7,#eaf4f0)}
+    .workspace-diagram{margin:34px 0 1px;display:flex;align-items:stretch;gap:16px}
+    .project-node{background:#fff;border:1px solid #c9ded5;box-shadow:0 5px 15px #246b5410;align-self:center;padding:14px;border-radius:12px;width:38%;font-size:12px;display:flex;align-items:center;gap:9px;font-weight:600}
+    .project-node .icon{color:#4c9281}
+    .branch-nodes{display:grid;gap:11px;flex:1;position:relative}
+    .branch-nodes:before{content:"";position:absolute;left:-9px;top:24px;bottom:24px;border-left:1px solid #b4d2c6}
+    .branch-node{border:1px solid #c9ded5;background:#ffffffcf;padding:12px;border-radius:10px;font-size:11px;position:relative;display:flex;align-items:center;gap:8px}
+    .branch-node:before{content:"";position:absolute;left:-10px;top:50%;width:9px;border-top:1px solid #b4d2c6}
+    .branch-node .icon{width:15px;height:15px;color:#54977f}
+    .branch-node small{color:#8a9b94;font-size:9px;margin-left:auto}
+    .agents-feature{background:linear-gradient(135deg,#fff,#f6f3fb)}
+    .agents-feature .feature-icon{background:#f0edf9;border-color:#e0d8f2;color:#8074b7}
+    .agents-row{display:flex;gap:11px;margin-top:28px}
+    .agent-mini{--agent:#7a78cf;flex:1;min-width:0;text-align:center;padding:16px 7px 11px;border:1px solid color-mix(in srgb,var(--agent),transparent 73%);border-radius:15px;background:color-mix(in srgb,var(--agent),white 95%)}
+    .agent-mini img{width:68px;height:68px;border-radius:50%;margin:0 auto 10px;border:2px solid #ffffff;box-shadow:0 0 0 1px color-mix(in srgb,var(--agent),transparent 65%)}
+    .agent-mini b{font-size:11px;font-weight:600;display:block;white-space:nowrap}
+    .agent-mini small{font-size:9px;color:#8d929f}
+    .role-counts{display:flex;gap:20px;margin-top:23px;padding-top:17px;border-top:1px solid #e0deed}
+    .role-counts>span{display:flex;align-items:baseline;gap:8px;font-size:11px;color:#84819c}
+    .role-counts b{font-size:22px;line-height:1.2;font-weight:650;color:#6b699c}
+    .role-credit{font-size:10px;line-height:1.75;color:#8f91a0;margin-top:12px}
+    .role-credit a{color:#77749d;text-decoration:underline;text-underline-offset:3px}
+    .trace-section{padding-bottom:0}
+    .trace-feature{margin:0;background:linear-gradient(120deg,#eff5f7,#f2f0fa)}
+    .trace-feature .workflow-copy h2{font-size:32px}
+    .trace-keypoints{display:grid;gap:13px;margin-top:22px}
+    .trace-keypoints strong{font-size:12px;font-weight:600;display:block;color:#586d86}
+    .trace-keypoints span{font-size:11px;color:#87929d;line-height:1.7;display:block;margin-top:3px}
+    .feature-bottom{margin-top:25px!important;font-size:11px!important;color:#8a92a0!important}
+    .skills-feature{padding-bottom:26px}
+    .skill-file{display:flex;gap:14px;align-items:center;padding:16px;border:1px solid #e0e8ec;border-radius:12px;background:#f8fafb;margin-top:24px}
+    .skill-file>.icon{color:#6b7c9a;width:27px;height:27px}
+    .skill-file strong{font-size:12px;font-weight:600;display:block}
+    .skill-file small{font-size:10px;color:#91a0a8}
+    .skill-file .skill-tag{margin-left:auto;white-space:nowrap;font-size:10px;background:#e7f3ed;color:#528673;border-radius:6px;padding:3px 8px}
+    .planning-feature .feature-icon{background:#fdf6e8;border-color:#eee0c2;color:#ad8a3f}
+    .idea-flow{display:flex;align-items:center;gap:10px;margin-top:28px}
+    .flow-pill{padding:10px 13px;border-radius:9px;font-size:11px;border:1px solid #e5e5e7;background:#fafafa;flex:1;display:flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap}
+    .flow-pill:first-child{background:#fcf7e9;border-color:#efe1b7;color:#9b7d30}
+    .flow-pill:last-child{background:#edf5f1;border-color:#cce1d7;color:#4e8071}
+    .idea-flow>.icon{width:14px;color:#a0acae}
+    .workflows-section{padding-top:0}
+    .workflow-feature{display:grid;grid-template-columns:.78fr 1.2fr;gap:42px;align-items:center;padding:37px;border:1px solid #d5dfdf;border-radius:24px;background:linear-gradient(120deg,#eef5f2,#f0f1f8);margin-bottom:20px}
+    .workflow-copy h2{font-size:32px;margin:12px 0 17px}
+    .workflow-copy>p{font-size:13px;color:var(--muted);margin:0 0 20px;line-height:1.8}
+    .capability-list{padding:0;margin:0;list-style:none;display:grid;gap:10px}
+    .capability-list li{display:flex;align-items:center;gap:9px;font-size:12px;color:#5d7b74}
+    .capability-list .icon{width:15px;height:15px;color:#6d9e8e}
+    .screenshot-card{border:1px solid #ccd9de;border-radius:12px;overflow:hidden;background:#f3f6fa;box-shadow:0 13px 35px -20px #19324260}
+    .screenshot-card button{border:0;background:transparent;padding:0;display:block;width:100%;cursor:zoom-in;color:inherit}
+    .screenshot-card img{width:100%;height:auto}
+    .screenshot-card .preview-label{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:10px;padding:9px 12px;background:#f7f9fa;color:#758992}
+    .preview-label .icon{width:13px;height:13px}
+    .workflow-example{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:20px;font-size:10px;color:#7b908a}
+    .workflow-example span{border:1px solid #d1e1da;background:#ffffff90;border-radius:6px;padding:5px 8px}
+    .workflow-example .icon{width:12px;height:12px}
+    .capability-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .capability-card{min-width:0;padding:30px;background:#fff;border:1px solid var(--line);border-radius:24px}
+    .capability-card h3{margin:12px 0;font-size:24px;line-height:1.25;letter-spacing:-.03em;font-weight:650}
+    .capability-card>p{font-size:13px;color:var(--muted);line-height:1.8;margin:0 0 20px}
+    .capability-card>p.capability-note{font-size:10px;color:#83918e;line-height:1.75;border-top:1px solid #e1e8e5;padding-top:14px;margin:20px 0 0}
+    .capability-card .capability-subhead{font-size:12px;font-weight:600;margin:22px 0 7px}
+    .capability-card .capability-subhead+p{font-size:12px}
+    .capability-card .screenshot-card{margin-top:24px}
+    .capability-card .screenshot-card img{aspect-ratio:1.64;object-fit:contain;background:#f3f6fa}
+    .capability-tags{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:20px}
+    .capability-tags span{font-size:9px;color:#7d8996;padding:4px 8px;border-radius:6px;background:#f4f6f8;border:1px solid #e4e9ed}
+    .capability-card .eyebrow{letter-spacing:.1em;font-size:10px}
+    .memory-card .eyebrow{color:#7a78b0}.database-card .eyebrow{color:#8c71ac}
+    .server-card{background:#f1f8fa}.server-card .eyebrow{color:#408999}
+    .sync-card{background:#f1f7f3}.sync-card .eyebrow{color:#628770}
+    .server-card>p,.sync-card>p{margin-bottom:0}
+    .terminal-example{margin-top:22px;padding:15px 17px;border:1px solid #d6e5e8;border-radius:10px;display:flex;align-items:center;gap:12px;font-size:11px;color:#6a8992;background:#ffffffb0}
+    .terminal-example code{font-family:Consolas,monospace;color:#467c88;font-size:10px}
+    .terminal-example .icon{width:15px;height:15px}
+    .sync-example{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:22px;border:1px solid #d7e5dc;padding:14px 16px;border-radius:10px;background:#ffffffb0;color:#6d8879;font-size:10px}
+    .sync-example>span{display:flex;align-items:center;gap:7px}
+    .sync-example .icon{width:15px;height:15px}
+    .collaboration-strip{display:flex;align-items:center;justify-content:space-between;gap:30px;padding:23px 28px;margin-top:20px;border:1px solid var(--line);border-radius:16px;background:#f0f2f7}
+    .collaboration-strip strong{font-size:14px;font-weight:600}
+    .collaboration-strip p{font-size:12px;color:var(--muted);margin:5px 0 0;max-width:650px}
+    .collaboration-strip .strip-icon{display:flex;align-items:center;justify-content:center;width:45px;height:45px;border-radius:12px;background:#fff;color:#7d82a6;flex-shrink:0}
+    .collaboration-strip .strip-text{flex:1}
+    .collaboration-strip .strip-note{color:#8c95a6;font-size:10px;white-space:nowrap}
+    .usecases-section{padding-bottom:0}
+    .usecases{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+    .usecase{padding:25px;border-top:2px solid #9abeb0;background:#eff5f2;border-radius:0 0 16px 16px;min-width:0}
+    .usecase:nth-child(3n+2){background:#f0eef7;border-color:#b4a4cc}
+    .usecase:nth-child(3n){background:#edf2f7;border-color:#9cb2c7}
+    .usecase .case-number{font-size:10px;color:#81938c;letter-spacing:.06em}
+    .usecase h3{margin:13px 0 10px;font-size:18px;font-weight:650;letter-spacing:-.025em}
+    .usecase p{font-size:12px;color:var(--muted);margin:0;line-height:1.8}
+    .case-route{font-size:10px;color:#779186;margin-top:22px;padding-top:14px;border-top:1px solid #d9e4de;line-height:1.8}
+    .control-section{background:#183e3e;color:#fff;position:relative;overflow:hidden;padding:76px 0}
+    .control-section:after{content:"";position:absolute;width:600px;height:600px;right:-260px;top:-220px;border:1px solid #ffffff0b;border-radius:50%;box-shadow:0 0 0 70px #ffffff03,0 0 0 140px #ffffff02;pointer-events:none}
+    .control-grid{display:grid;grid-template-columns:.93fr 1fr;gap:88px;align-items:center;position:relative;z-index:1}
+    .control-section .eyebrow{color:#9ac4b9}
+    .control-section h2{max-width:450px;font-size:40px}
+    .control-section .lead{font-size:14px;color:#b1c7c3;max-width:420px;margin:20px 0 25px}
+    .text-link{display:inline-flex;align-items:center;gap:8px;color:#b8dbd2;font-size:12px;font-weight:600}
+    .text-link .icon{width:15px;height:15px}
+    .control-list{display:grid;gap:0}
+    .control-item{display:flex;gap:16px;padding:21px 0;border-bottom:1px solid #ffffff15}
+    .control-item:first-child{padding-top:0}
+    .control-item:last-child{border:0;padding-bottom:0}
+    .control-item>.icon{color:#89c0ae;width:22px;height:22px;margin-top:2px}
+    .control-item h3{margin:0 0 4px;font-size:15px;font-weight:600}
+    .control-item p{margin:0;font-size:12px;color:#b1c7c3;line-height:1.7}
+    .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:36px;margin-top:42px}
+    .step{padding-top:19px;border-top:1px solid #d4e0de}
+    .step-number{color:#7aa99c;font-size:12px;letter-spacing:.1em}
+    .step h3{font-weight:650;font-size:19px;letter-spacing:-.025em;margin:17px 0 10px}
+    .step p{color:var(--muted);font-size:13px;max-width:300px;margin:0}
+    .start-section{padding-bottom:83px}
+    .download-section{padding:0 0 85px}
+    .download-card{position:relative;overflow:hidden;display:grid;grid-template-columns:1fr .8fr;gap:65px;padding:54px;border:1px solid #cddfd8;border-radius:28px;background:linear-gradient(120deg,#edf7f2 0,#f0f4f7 70%,#f0ecf7 100%)}
+    .download-card h2{max-width:550px;margin-top:12px;font-size:39px}
+    .download-card .desc{font-size:14px;color:var(--muted);max-width:450px;margin:18px 0 25px}
+    .download-meta{display:flex;gap:15px;flex-wrap:wrap;font-size:10px;color:#7c9088;margin-top:16px}
+    .download-side{border-left:1px solid #d6e2dd;padding:5px 0 5px 35px;align-self:center}
+    .download-side h3{font-size:13px;margin:0 0 14px;font-weight:650}
+    .requirements{display:grid;gap:12px;margin:0}
+    .requirements div{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;font-size:12px}
+    .requirements dt{color:#82918d}
+    .requirements dd{margin:0;text-align:right}
+    .download-note{margin:19px 0 0;font-size:10px;color:#8b9791;line-height:1.7}
+    .faq-section{padding:0 0 96px}
+    .faq-grid{display:grid;grid-template-columns:.65fr 1fr;gap:100px}
+    .faq-heading p{font-size:13px;color:var(--muted);max-width:250px;margin-top:18px}
+    details{border-bottom:1px solid var(--line)}
+    details:first-child{border-top:1px solid var(--line)}
+    summary{padding:20px 28px 20px 0;font-size:14px;font-weight:550;list-style:none;cursor:pointer;position:relative}
+    summary::-webkit-details-marker{display:none}
+    summary:after{content:"+";position:absolute;right:2px;font-size:20px;font-weight:300;top:16px;color:#87a29a}
+    details[open] summary:after{content:"−"}
+    details p{font-size:13px;color:var(--muted);margin:0 28px 20px 0;line-height:1.75}
+    footer{border-top:1px solid var(--line);background:#f2f5f6}
+    .footer-main{display:flex;justify-content:space-between;align-items:center;gap:30px;padding:23px 0}
+    .footer-main .wordmark{width:133px;height:44px}
+    .footer-main p{font-size:11px;color:#8b989d;margin:0}
+    .footer-main>a{font-size:11px;color:#698277}
+    .footer-sub{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px 0 20px;border-top:1px solid #e0e7e8;font-size:10px;color:#9aa5a8}
+    dialog{border:1px solid #d6e3e0;border-radius:20px;box-shadow:0 25px 100px #112f3935;padding:30px;max-width:min(480px,calc(100% - 32px));color:var(--ink);background:#fff}
+    dialog::backdrop{background:#18303c87;backdrop-filter:blur(6px)}
+    dialog h2{font-size:25px;line-height:1.25;margin:12px 0}
+    dialog p{font-size:13px;color:var(--muted)}
+    dialog .dialog-actions{display:flex;justify-content:flex-end;margin-top:24px}
+    .dialog-badge{display:flex;align-items:center;gap:8px;color:var(--teal);font-size:11px;font-weight:600}
+    .lightbox{max-width:calc(100% - 40px);width:1920px;padding:0;border-radius:12px;overflow:auto;background:#f5f8fa}
+    .lightbox-head{padding:10px 16px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:#657988}
+    .lightbox-head button{display:flex;padding:5px;background:transparent;border:0;color:#657988}
+    .lightbox img{width:100%;height:auto}
+    @media(min-width:1600px){.hero{padding-top:78px}}
+    @media(max-width:1000px){
+      .nav-links{gap:20px}.nav-links>a:first-child{display:none}.features{grid-template-columns:1fr 1fr}
+      .feature{padding:26px}.agent-mini img{width:54px;height:54px}.agent-mini b{font-size:10px}.agent-mini small{font-size:8px}
+      .control-grid{gap:45px}.download-card{padding:40px;gap:35px}.faq-grid{gap:50px}
+      .project-node{width:34%;padding:10px;flex-direction:column}.branch-node small{display:none}
+      .flow-pill{padding:10px;font-size:10px;gap:5px}
+      .workflow-feature{padding:28px;gap:28px;grid-template-columns:.85fr 1fr}.workflow-copy h2{font-size:28px}
+      .capability-card{padding:25px}.collaboration-strip{padding:22px;gap:20px}.collaboration-strip .strip-note{display:none}
+      .usecase{padding:22px}.usecase h3{font-size:17px}
+    }
+    @media(max-width:760px){
+      .wrap{width:calc(100% - 40px)}header{height:70px}.wordmark{width:141px;height:47px}.nav{gap:15px}.menu-toggle{display:flex}
+      .hero>.wrap{width:calc(100% - 40px)}
+      .nav-links{display:none;position:absolute;top:69px;left:0;right:0;background:#f7f9b;backdrop-filter:blur(20px);padding:20px;border-bottom:1px solid var(--line);flex-direction:column;align-items:stretch;gap:18px;background:#f7f9fbfa}
+      .nav-links[data-open="true"]{display:flex}.nav-links>a:first-child{display:block}
+      .hero{padding-top:43px}h1{font-size:clamp(36px,7.5vw,54px);margin-top:23px}.hero-lead{font-size:15px;max-width:480px}.desktop-br{display:none}
+      .hero-actions{margin-top:24px}.hero-meta{font-size:10px;gap:7px}.hero-meta .icon{width:12px}
+      .showcase{margin-top:33px}.screen-tabs{width:100%;flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;scrollbar-width:thin}.screen-tab{font-size:10px;padding:8px 9px;gap:5px}.screen-tab .icon{width:13px}
+      .screen-frame{border-radius:11px}.screen-top{height:28px;font-size:8px;padding:0 10px}.screen-zoom span{display:none}
+      .screen-caption{font-size:9px;gap:12px;align-items:flex-start}.screen-caption strong{max-width:65%}.screen-caption>span{max-width:35%;text-align:right}
+      .principles{gap:18px;flex-wrap:wrap;margin-top:28px;padding-bottom:37px;font-size:10px}.principles .icon{width:14px}
+      section{padding:62px 0}.section-head{display:block;margin-bottom:25px}.section-head>p{margin-top:17px;max-width:440px;font-size:13px}
+      h2{font-size:32px}.features{grid-template-columns:1fr;gap:14px}.feature{padding:27px}.feature h3{font-size:22px}
+      .feature p{font-size:13px;max-width:none}.project-node{flex-direction:row;width:36%;padding:14px}.branch-node small{display:block}
+      .agent-mini img{width:65px;height:65px}.agent-mini b{font-size:11px}.agent-mini small{font-size:9px}.agents-row{gap:12px}
+      .control-section{padding:56px 0}.control-grid{grid-template-columns:1fr;gap:35px}.control-section h2{font-size:34px}
+      .control-section .lead{margin:18px 0}.control-item{padding:17px 0}.control-item p{font-size:12px}.control-item h3{font-size:14px}
+      .steps{grid-template-columns:1fr;gap:25px;margin-top:30px}.step{display:grid;grid-template-columns:35px 1fr;column-gap:10px;padding-top:18px}
+      .step-number{grid-row:span 2;margin-top:2px}.step h3{font-size:18px;margin:0 0 9px}.step p{max-width:none}
+      .start-section{padding-bottom:60px}.download-section{padding-bottom:60px}.download-card{grid-template-columns:1fr;padding:29px;gap:30px;border-radius:20px}
+      .download-card h2{font-size:30px}.download-card .desc{font-size:13px}.download-side{border-left:0;border-top:1px solid #d6e2dd;padding:24px 0 0}
+      .requirements div{font-size:12px}.download-note{font-size:10px}
+      .faq-grid{grid-template-columns:1fr;gap:25px}.faq-section{padding-bottom:60px}.faq-heading p{max-width:none}.faq-heading h2 br{display:none}
+      summary{font-size:13px;padding-top:18px;padding-bottom:18px}.footer-main{gap:10px;flex-wrap:wrap;padding:18px 0}.footer-main p{width:100%;order:3;font-size:10px}
+      .footer-sub{font-size:9px;align-items:flex-start}.preview-note{font-size:9px;padding:5px 12px;min-height:28px}
+    }
+    @media(max-width:390px){
+      .wrap{width:calc(100% - 30px)}h1{font-size:35px}.hero-actions{flex-direction:column;align-items:stretch;gap:9px}
+      .hero-meta{flex-wrap:wrap}.screen-tab{padding:7px;font-size:9px;gap:4px}.screen-tab .icon{width:12px}
+      .principles{gap:12px}.feature{padding:23px}.agent-mini img{width:57px;height:57px}.agent-mini b{font-size:10px}.agent-mini{padding-left:4px;padding-right:4px}
+      .workspace-diagram{gap:13px}.project-node{font-size:10px;padding:10px}.branch-node{font-size:10px;padding:10px}.branch-node small{display:none}
+      .hero>.wrap{width:calc(100% - 30px)}.role-counts{gap:15px}.role-counts>span{font-size:10px}.role-counts b{font-size:20px}
+      .skill-file{padding:12px;gap:10px}.skill-file strong{font-size:11px}.skill-file small{font-size:9px}.skill-file .skill-tag{font-size:9px;padding:3px 6px}
+    }
+    @media(max-width:760px){
+      .workflows-section{padding-top:0}
+      .workflow-feature{grid-template-columns:1fr;gap:27px;padding:25px;border-radius:20px}.workflow-copy h2{font-size:29px}
+      .workflow-copy>p{font-size:13px;margin-bottom:18px}.workflow-example{gap:6px;margin-top:19px;font-size:9px}.workflow-example span{padding:5px 7px}
+      .workflow-example .icon{width:10px;height:10px}
+      .capability-grid{grid-template-columns:1fr;gap:16px}.capability-card{padding:25px;border-radius:20px}.capability-card h3{font-size:23px}
+      .capability-tags{gap:5px}.capability-tags span{font-size:9px}
+      .collaboration-strip{padding:22px;align-items:flex-start;gap:15px}.collaboration-strip .strip-icon{width:33px;height:33px;border-radius:9px}
+      .collaboration-strip .strip-icon .icon{width:17px;height:17px}.collaboration-strip strong{font-size:13px}.collaboration-strip p{font-size:11px}
+      .usecases{grid-template-columns:1fr;gap:16px}.usecase h3{font-size:19px}.case-route{margin-top:17px;padding-top:11px}
+    }
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
+  </style>
+  <link rel="canonical" href="https://lastart.github.io/nexade/">
+  <meta name="robots" content="index,follow">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="NEXADE — ваша команда AI. Ваша рабочая среда.">
+  <meta property="og:description" content="Мультиагентная среда для ваших проектов: роли и сценарии, память, инструменты, данные и проверка изменений.">
+  <meta property="og:url" content="https://lastart.github.io/nexade/">
+  <meta property="og:image" content="https://lastart.github.io/nexade/assets/workspace.png">
+  <meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+  <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4"/></symbol>
+    <symbol id="i-window" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18m-12 0v11"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="4" width="5" height="16" rx="1"/><rect x="10" y="4" width="5" height="11" rx="1"/><rect x="17" y="4" width="4" height="14" rx="1"/></symbol>
+    <symbol id="i-trace" viewBox="0 0 24 24"><path d="m3 15 4-1 3-8 4 14 3-8h4"/></symbol>
+    <symbol id="i-branch" viewBox="0 0 24 24"><circle cx="6" cy="5" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="19" r="2"/><path d="M6 7v10m0-4c8 0 12-1 12-5"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 8V6a2 2 0 0 1 2-2h5l2 3h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8Z"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="7" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M17 4a3 3 0 0 1 0 6m1 4a5 5 0 0 1 3 4v2"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 4h6a2 2 0 0 1 2 2v15a4 4 0 0 0-3-2H4V4Zm16 0h-6a2 2 0 0 0-2 2m8-2v15h-5a4 4 0 0 0-3 2"/></symbol>
+    <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6m-5 3h4M8 14a6 6 0 1 1 8 0c-1 1-1 2-1 2H9s0-1-1-2Z"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z"/><path d="m8 12 3 3 5-6"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-pc" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="13" rx="2"/><path d="M8 21h8m-4-5v5"/></symbol>
+    <symbol id="i-expand" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H5v18h14V8l-5-5Zm0 0v5h5M8 13h8m-8 4h5"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 6 9 7 9-7"/></symbol>
+    <symbol id="i-terminal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3m6 0h4"/></symbol>
+    <symbol id="i-sync" viewBox="0 0 24 24"><path d="M20 8a8 8 0 0 0-14-3L3 8m0-5v5h5M4 16a8 8 0 0 0 14 3l3-3m0 5v-5h-5"/></symbol>
+    <symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 4 16 4 16 0V5M4 12c0 4 16 4 16 0"/></symbol>
+    <symbol id="i-server" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="7" rx="2"/><rect x="3" y="14" width="18" height="7" rx="2"/><path d="M7 6.5h.1M7 17.5h.1M12 6.5h5M12 17.5h5"/></symbol>
+  </svg>
+<header>
+    <div class="wrap nav">
+      <a href="#top" aria-label="NEXADE — в начало"><img class="wordmark" src="assets/wordmark.png" alt="NEXADE"></a>
+      <button class="menu-toggle" aria-label="Открыть меню" aria-expanded="false" aria-controls="main-nav"><svg class="icon"><use href="#i-menu"/></svg></button>
+      <nav class="nav-links" id="main-nav" aria-label="Основная навигация">
+        <a href="#features">Возможности</a><a href="#interface">Интерфейс</a><a href="#start">Как начать</a><a href="#faq">Вопросы</a>
+        <a class="btn btn-primary btn-small" href="#download">Выпуски Preview<svg class="icon" style="width:14px;height:14px"><use href="#i-down"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <main id="top">
+    <div class="hero">
+      <div class="wrap">
+        <div class="release-pill"><span class="status-dot"></span>Уже можно попробовать<span>Preview 0.5.1</span></div>
+        <h1><span class="hero-line">Ваша команда AI.</span><span class="hero-line"><em>Ваша рабочая среда.</em></span></h1>
+        <p class="hero-lead">Мультиагентная среда для ваших проектов.<br>Развивайте идеи с AI-агентами: разделяйте задачи,<br class="desktop-br"> сохраняйте контекст и проверяйте изменения.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#download"><svg class="icon"><use href="#i-down"/></svg>Выпуски для Windows</a>
+          <a class="btn btn-secondary" href="#interface">Посмотреть интерфейс<svg class="icon" style="width:16px"><use href="#i-arrow"/></svg></a>
+        </div>
+        <div class="hero-meta"><svg class="icon"><use href="#i-pc"/></svg>Windows 10 / 11 · x64<i>·</i>Проекты · агенты · инструменты</div>
+        <div class="showcase" id="interface">
+          <div class="screen-tabs" role="tablist" aria-label="Экраны NEXADE">
+            <button class="screen-tab" id="tab-workspace" role="tab" aria-selected="true" aria-controls="screen-panel" data-screen="workspace" tabindex="0"><svg class="icon"><use href="#i-window"/></svg>Рабочая область</button>
+            <button class="screen-tab" id="tab-ideas" role="tab" aria-selected="false" aria-controls="screen-panel" data-screen="ideas" tabindex="-1"><svg class="icon"><use href="#i-bulb"/></svg>Idea Radar</button>
+            <button class="screen-tab" id="tab-backlog" role="tab" aria-selected="false" aria-controls="screen-panel" data-screen="backlog" tabindex="-1"><svg class="icon"><use href="#i-grid"/></svg>Backlog</button>
+            <button class="screen-tab" id="tab-scenarios" role="tab" aria-selected="false" aria-controls="screen-panel" data-screen="scenarios" tabindex="-1"><svg class="icon"><use href="#i-branch"/></svg>Сценарии</button>
+            <button class="screen-tab" id="tab-memory" role="tab" aria-selected="false" aria-controls="screen-panel" data-screen="memory" tabindex="-1"><svg class="icon"><use href="#i-book"/></svg>Память</button>
+            <button class="screen-tab" id="tab-databases" role="tab" aria-selected="false" aria-controls="screen-panel" data-screen="databases" tabindex="-1"><svg class="icon"><use href="#i-database"/></svg>Базы данных</button>
+            <button class="screen-tab" id="tab-servers" role="tab" aria-selected="false" aria-controls="screen-panel" data-screen="servers" tabindex="-1"><svg class="icon"><use href="#i-server"/></svg>Серверы</button>
+            <button class="screen-tab" id="tab-skills" role="tab" aria-selected="false" aria-controls="screen-panel" data-screen="skills" tabindex="-1"><svg class="icon"><use href="#i-file"/></svg>Навыки</button>
+            <button class="screen-tab" id="tab-agents" role="tab" aria-selected="false" aria-controls="screen-panel" data-screen="agents" tabindex="-1"><svg class="icon"><use href="#i-users"/></svg>Агенты</button>
+            <button class="screen-tab" id="tab-trace" role="tab" aria-selected="false" aria-controls="screen-panel" data-screen="trace" tabindex="-1"><svg class="icon"><use href="#i-trace"/></svg>Трассировка</button>
+          </div>
+          <div class="screen-frame" id="screen-panel" role="tabpanel" aria-labelledby="tab-workspace">
+            <div class="screen-top"><span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span><span>NEXADE 0.5.1 / <span id="screen-title">Рабочая область</span></span><button class="screen-zoom" aria-label="Увеличить снимок интерфейса"><svg class="icon"><use href="#i-expand"/></svg><span>Увеличить</span></button></div>
+            <button class="screen-image-button" aria-label="Открыть крупный снимок рабочей области"><img class="screen-image" id="screen-image" src="assets/workspace.png" alt="Рабочая область NEXADE: проекты, DevTrack, агенты, диалог и файлы"></button>
+          </div>
+          <div class="screen-caption" aria-live="polite"><strong id="screen-caption">Проект, задача, агент и файлы — в одном рабочем пространстве.</strong><span>Preview 0.5.1 · учебные данные</span></div>
+        </div>
+        <div class="principles">
+          <span><svg class="icon"><use href="#i-folder"/></svg>Локальные проекты</span>
+          <span><svg class="icon"><use href="#i-branch"/></svg>Отдельный DevTrack для задачи</span>
+          <span><svg class="icon"><use href="#i-check"/></svg>Результат можно проверить</span>
+        </div>
+      </div>
+    </div>
+    <section id="features">
+      <div class="wrap">
+        <div class="section-head"><div><div class="eyebrow">Собрано вокруг вашей работы</div><h2>У каждой задачи — своё место.<br>У каждого агента — своя роль.</h2></div><p>От первой идеи до просмотра изменений.<br>Контекст проекта остаётся рядом<br>на каждом этапе.</p></div>
+        <div class="features">
+          <article class="feature devtrack-feature">
+            <div class="feature-icon"><svg class="icon"><use href="#i-branch"/></svg></div>
+            <h3>Исследуйте в своём DevTrack</h3>
+            <p>DevTrack — пространство одной задачи: рабочая папка, участники и обсуждения внутри проекта. Выделите трек под новую функцию или исправление и сравните изменения с основной папкой перед переносом.</p>
+            <div class="workspace-diagram" aria-label="Проект и две отдельные рабочие копии">
+              <div class="project-node"><svg class="icon"><use href="#i-folder"/></svg>Ваш проект</div>
+              <div class="branch-nodes"><div class="branch-node"><svg class="icon"><use href="#i-branch"/></svg>Новая функция<small>DevTrack</small></div><div class="branch-node"><svg class="icon"><use href="#i-branch"/></svg>Исследование<small>DevTrack</small></div></div>
+            </div>
+          </article>
+          <article class="feature agents-feature">
+            <div class="feature-icon"><svg class="icon"><use href="#i-users"/></svg></div>
+            <h3>Выбирайте специализацию</h3>
+            <p>Разделяйте работу между специализациями: архитектура, бэкенд, фронтенд. У каждой роли есть предметные инструкции и области фокуса.</p>
+            <div class="agents-row">
+              <div class="agent-mini"><img src="assets/architect.png" alt="" loading="lazy"><b>Архитектор</b><small>Структура и решения</small></div>
+              <div class="agent-mini" style="--agent:#319e8c"><img src="assets/backend.png" alt="" loading="lazy"><b>Бэкенд</b><small>Логика и API</small></div>
+              <div class="agent-mini" style="--agent:#c66790"><img src="assets/frontend.png" alt="" loading="lazy"><b>Фронтенд</b><small>Интерфейс и UX</small></div>
+            </div>
+            <div class="role-counts"><span><b>33</b>роли NEXADE</span><span><b>283</b>роли agency-agents</span></div>
+            <div class="role-credit">Расширенный каталог основан на <a href="https://github.com/msitarzewski/agency-agents" target="_blank" rel="noopener noreferrer">agency-agents</a> · MIT. Отдельная специализированная команда и организация работы — NEXADE.</div>
+          </article>
+          <article class="feature skills-feature">
+            <div class="feature-icon"><svg class="icon"><use href="#i-book"/></svg></div>
+            <h3>Закрепите правила работы</h3>
+            <p>Навык — набор инструкций и материалов для агента. Сохраните правила проверки своего интерфейса и используйте их в следующих задачах. Выбирайте нужную редакцию с учётом совместимости и разрешений.</p>
+            <div class="skill-file"><svg class="icon"><use href="#i-file"/></svg><div><strong>Инструкции и материалы</strong><small>Библиотека навыков NEXADE</small></div><span class="skill-tag">Совместимость</span></div>
+          </article>
+          <article class="feature planning-feature">
+            <div class="feature-icon"><svg class="icon"><use href="#i-bulb"/></svg></div>
+            <h3>Не теряйте хорошие идеи</h3>
+            <p>Сохраняйте предложения в Idea Radar и организуйте задачи в Backlog. Фильтруйте по проекту, DevTrack и теме, когда нужно сосредоточиться.</p>
+            <div class="idea-flow" aria-label="От идеи к работе"><div class="flow-pill">Idea Radar</div><svg class="icon"><use href="#i-arrow"/></svg><div class="flow-pill">Backlog</div><svg class="icon"><use href="#i-arrow"/></svg><div class="flow-pill">В работу</div></div>
+          </article>
+        </div>
+      </div>
+    </section>
+    <section class="workflows-section" id="workflows">
+      <div class="wrap">
+        <div class="section-head"><div><div class="eyebrow">От отдельных задач — к процессу</div><h2>Организуйте работу целиком.</h2></div><p>Сценарии, знания и окружение проекта<br>связаны с работой ваших агентов.</p></div>
+        <article class="workflow-feature">
+          <div class="workflow-copy">
+            <div class="eyebrow">Визуальные сценарии</div><h2>Задайте процесс<br>на схеме.</h2>
+            <p>Соберите этапы AI и человека, назначьте участников и условия переходов. Навыки выбранных ролей задают правила работы. Сохраните сценарий и применяйте его к следующим задачам проекта.</p>
+            <ul class="capability-list">
+              <li><svg class="icon"><use href="#i-check"/></svg>Исполнители, задача и навыки этапа</li>
+              <li><svg class="icon"><use href="#i-check"/></svg>Ваши результаты и решения между этапами</li>
+              <li><svg class="icon"><use href="#i-check"/></svg>Ограниченные возвраты и закреплённая версия</li>
+            </ul>
+            <div class="workflow-example" aria-label="Пример процесса"><span>Разбор</span><svg class="icon"><use href="#i-arrow"/></svg><span>Реализация</span><svg class="icon"><use href="#i-arrow"/></svg><span>Проверка</span><svg class="icon"><use href="#i-arrow"/></svg><span>Ваш результат</span></div>
+          </div>
+          <div class="screenshot-card"><button data-preview-image data-preview-title="Визуальные сценарии NEXADE 0.5.1" aria-label="Увеличить снимок редактора сценариев"><img src="assets/scenarios.png" alt="Редактор сценария NEXADE с этапами разбора задачи, реализации и проверки человеком" loading="lazy"><span class="preview-label">Сценарии 0.5.1 · пример схемы<svg class="icon"><use href="#i-expand"/></svg></span></button></div>
+        </article>
+        <div class="capability-grid" id="connected">
+          <article class="capability-card memory-card">
+            <div class="eyebrow">Общая память</div><h3>Сохраняйте решения<br>для следующей задачи.</h3>
+            <p>Запишите, что выбрали для проекта, почему и как это проверили. Поиск и граф помогают вернуться к связанным материалам. Агенты могут читать и сохранять записи через доступный инструмент памяти в рамках разрешений.</p>
+            <div class="screenshot-card"><button data-preview-image data-preview-title="Память и граф связей NEXADE 0.5.1" aria-label="Увеличить снимок графа памяти"><img src="assets/memory.png" alt="Общая память NEXADE: папки записей и граф связей между знаниями" loading="lazy"><span class="preview-label">Память 0.5.1 · учебные записи<svg class="icon"><use href="#i-expand"/></svg></span></button></div>
+            <div class="capability-tags"><span>Markdown</span><span>Поиск</span><span>Связанные записи</span><span>Доступ по разрешениям</span></div>
+            <p class="capability-note">Общие материалы и записи проектов находятся на этом компьютере. Перенос памяти между компьютерами пока не реализован.</p>
+          </article>
+          <article class="capability-card database-card">
+            <div class="eyebrow">Базы данных</div><h3>Проверьте данные<br>своего приложения.</h3>
+            <p>Откройте схему базы, посмотрите таблицы и колонки, выполните ограниченную SQL-выборку. Разберитесь, какие данные сохраняет приложение. По умолчанию доступно чтение; изменение данных требует разрешённого профиля и отдельного решения.</p>
+            <div class="screenshot-card"><button data-preview-image data-preview-title="Работа с базами данных NEXADE 0.5.1" aria-label="Увеличить снимок SQL-редактора"><img src="assets/databases.png" alt="Страница баз данных NEXADE с подключением SQLite, SQL-редактором и результатом выборки" loading="lazy"><span class="preview-label">SQL 0.5.1 · учебная SQLite<svg class="icon"><use href="#i-expand"/></svg></span></button></div>
+            <div class="capability-tags"><span>SQLite</span><span>PostgreSQL</span><span>MySQL / MariaDB</span><span>SQL Server</span></div>
+            <p class="capability-note">Доступ агента к подключению включается отдельно. Допустимые действия ограничены настройками NEXADE и правами учётной записи в самой базе.</p>
+          </article>
+          <article class="capability-card server-card">
+            <div class="eyebrow">Серверы и окружение проекта</div><h3>Разбирайтесь с сервером<br>в контексте проекта.</h3>
+            <p>Откройте SSH-сеанс, просмотрите разрешённые файлы и передайте их через SFTP. Для действий агента используются права подключения и контролируемые запросы на команды. Профили помогают возвращаться к нужному окружению.</p>
+            <div class="terminal-example"><svg class="icon"><use href="#i-terminal"/></svg><span>SSH-сеанс · команды и файлы проекта</span></div>
+            <div class="capability-tags"><span>SSH / SFTP</span><span>AWS SSM</span><span>WinRM</span><span>Права доступа</span></div>
+            <p class="capability-note">Подключение открывает доступ к ресурсам сервера. Сам агент продолжает работать локально.</p>
+          </article>
+          <article class="capability-card sync-card">
+            <div class="eyebrow">Синхронизация и восстановление</div><h3>Продолжайте работу<br>на другой машине.</h3>
+            <p>Передавайте проекты, DevTrack, переносимую историю и настройки через общую папку Google Drive или SFTP-хранилище. Пакет шифруется перед передачей; на другом устройстве нужно настроить доступ заново.</p>
+            <div class="sync-example"><span><svg class="icon"><use href="#i-pc"/></svg>Этот компьютер</span><svg class="icon"><use href="#i-sync"/></svg><span>Другой компьютер<svg class="icon"><use href="#i-pc"/></svg></span></div>
+            <div class="capability-tags"><span>Облачная папка</span><span>SFTP</span><span>Шифрование</span><span>Локальные снимки</span></div>
+            <h4 class="capability-subhead">Снимки и восстановление</h4><p>Сохраните полную копию проекта перед экспериментом. Восстановите её в новую папку, чтобы сравнить варианты, сохранив текущие файлы.</p>
+            <p class="capability-note">Память и почта агентов пока локальные. Авторизация и внутренние сеансы AI не переносятся.</p>
+          </article>
+        </div>
+        <div class="collaboration-strip">
+          <div class="strip-icon"><svg class="icon"><use href="#i-mail"/></svg></div><div class="strip-text"><strong>Передавайте вопросы между агентами.</strong><p>Попросите одного участника уточнить вопрос у другого. В почте видны отправитель, адресат, цепочка и состояние сообщения. Обсуждение остаётся связано с проектом и нужным DevTrack.</p></div><span class="strip-note">Контекст задачи рядом</span>
+        </div>
+      </div>
+    </section>
+    <section class="control-section" id="control">
+      <div class="wrap control-grid">
+        <div><div class="eyebrow">Понимайте, что происходит</div><h2>У AI есть инструменты.<br>У вас — контроль.</h2><p class="lead">Следите за действиями агента, открывайте результаты вызовов и возвращайтесь к истории сессии. Проверка работы остаётся частью процесса.</p><a class="text-link" href="#interface" data-show-screen="trace">Посмотреть трассировку<svg class="icon"><use href="#i-arrow"/></svg></a></div>
+        <div class="control-list">
+          <div class="control-item"><svg class="icon"><use href="#i-shield"/></svg><div><h3>Понятный доступ к инструментам</h3><p>Сводка показывает доступность инструментов и навыков в контексте выбранного агента.</p></div></div>
+          <div class="control-item"><svg class="icon"><use href="#i-trace"/></svg><div><h3>Видимая история работы</h3><p>Запросы, вызовы инструментов и сообщённые провайдером метрики. Если данных нет, это явно обозначено.</p></div></div>
+          <div class="control-item"><svg class="icon"><use href="#i-clock"/></svg><div><h3>Изменения и локальные снимки</h3><p>Просматривайте изменения и сохраняйте состояние папок перед важным этапом работы.</p></div></div>
+        </div>
+      </div>
+    </section>
+    <section class="trace-section" id="tracing">
+      <div class="wrap">
+        <article class="workflow-feature trace-feature">
+          <div class="workflow-copy"><div class="eyebrow">Трассировка и расход токенов</div><h2>Видьте, на что<br>уходит контекст.</h2><p>Откройте ход сессии: запросы, вызовы инструментов, результаты и сообщённые провайдером токены. Найдите большие ответы и разберите, что происходило на каждом шаге.</p>
+            <div class="trace-keypoints"><div><strong>Токены по данным провайдера</strong><span>Вход, кеш и выход — когда эти счётчики доступны.</span></div><div><strong>От графика — к конкретному ходу</strong><span>Переходите к запросу и результатам инструментов.</span></div><div><strong>Источники и объём результатов</strong><span>Смотрите крупные добавления и явно отмеченные пропуски данных.</span></div></div>
+          </div>
+          <div class="screenshot-card"><button data-preview-image data-preview-title="Трассировка сессии NEXADE 0.5.1" aria-label="Увеличить снимок трассировки"><img src="assets/trace.png" alt="Трассировка сессии NEXADE с графиками сообщённых токенов и переходом к ходу" loading="lazy"><span class="preview-label">Трассировка 0.5.1 · учебные измерения<svg class="icon"><use href="#i-expand"/></svg></span></button></div>
+        </article>
+      </div>
+    </section>
+    <section class="usecases-section" id="usecases">
+      <div class="wrap">
+        <div class="section-head"><div><div class="eyebrow">Для ваших идей в коде</div><h2>Что можно организовать<br>в NEXADE.</h2></div><p>От небольшого эксперимента<br>до последовательной разработки функции.</p></div>
+        <div class="usecases">
+          <article class="usecase"><div class="case-number">01 / НОВАЯ ФУНКЦИЯ</div><h3>Новая функция по этапам</h3><p>Поручите разработчику реализацию формы, проверяющему — разбор результата, а себе оставьте проверку пользовательского пути. Повторяющиеся этапы сохраните в сценарии.</p><div class="case-route">DevTrack → сценарий → ваш результат</div></article>
+          <article class="usecase"><div class="case-number">02 / ДАННЫЕ ПРИЛОЖЕНИЯ</div><h3>Проверка данных</h3><p>На тестовой базе посмотрите схему и выборку. Сопоставьте результат с поведением интерфейса и обсудите наблюдение с агентом.</p><div class="case-route">Подключение → схема → выборка</div></article>
+          <article class="usecase"><div class="case-number">03 / ПАМЯТЬ ПРОЕКТА</div><h3>Решение для следующей задачи</h3><p>Запишите, почему выбрали структуру данных или ограничение прототипа. Свяжите заметки и вернитесь к ним перед следующим изменением.</p><div class="case-route">Память → связанные записи → новая задача</div></article>
+          <article class="usecase"><div class="case-number">04 / ОКРУЖЕНИЕ ПРОЕКТА</div><h3>Разбор ошибки на сервере</h3><p>Дайте участнику разрешённый доступ к журналу тестового сервера. Рассмотрите выводы и отдельно подтвердите нужную изменяющую команду.</p><div class="case-route">SSH-доступ → журнал → решение</div></article>
+          <article class="usecase"><div class="case-number">05 / ДРУГОЙ КОМПЬЮТЕР</div><h3>Продолжение проекта</h3><p>Завершите текущие операции, синхронизируйте переносимые данные и дождитесь облачного клиента. На другом компьютере проверьте файлы и настройте доступ.</p><div class="case-route">Обмен → проверка данных → продолжение</div></article>
+          <article class="usecase"><div class="case-number">06 / ЭКСПЕРИМЕНТ</div><h3>Сравнение с прежним вариантом</h3><p>Сохраните снимок до эксперимента, затем восстановите его в новую папку. Сравните варианты, сохранив текущие файлы.</p><div class="case-route">Снимок → эксперимент → отдельная копия</div></article>
+        </div>
+      </div>
+    </section>
+    <section class="start-section" id="start">
+      <div class="wrap">
+        <div class="section-head"><div><div class="eyebrow">Начните с одной задачи</div><h2>От проекта — к первому результату.</h2></div><p>Привычные файлы и понятные шаги.<br>Всё начинается с вашей задачи.</p></div>
+        <div class="steps">
+          <div class="step"><div class="step-number">01 /</div><h3>Откройте проект</h3><p>Выберите папку и создайте DevTrack, чтобы выделить рабочее пространство под задачу.</p></div>
+          <div class="step"><div class="step-number">02 /</div><h3>Выберите роль агента</h3><p>Настройте подключение, выберите специализацию и опишите задачу с критериями результата.</p></div>
+          <div class="step"><div class="step-number">03 /</div><h3>Проверьте работу</h3><p>Изучите ответ, вызовы инструментов и изменения в файлах. Решите, что делать дальше.</p></div>
+        </div>
+      </div>
+    </section>
+    <section class="download-section" id="download">
+      <div class="wrap download-card">
+        <div><div class="eyebrow"><span class="status-dot"></span>NEXADE Preview</div><h2>Дайте вашей следующей<br>идее рабочее пространство.</h2><p class="desc">Попробуйте другой способ работать с AI-агентами — с проектом, инструментами и историей перед глазами.</p><a class="btn btn-primary" id="download-button" href="https://github.com/LastArt/nexade/releases" target="_blank" rel="noopener noreferrer"><svg class="icon"><use href="#i-down"/></svg>Открыть выпуски</a><div class="download-meta"><span>Windows 10 / 11</span><span>x64</span><span>Установщик .exe</span></div></div>
+        <div class="download-side">
+          <h3>Перед началом</h3>
+          <dl class="requirements"><div><dt>Платформа</dt><dd>Windows 10 / 11 x64</dd></div><div><dt>Совместимость Preview</dt><dd>Codex</dd></div><div><dt>Для работы с AI</dt><dd>Настроенный доступ<br>к провайдеру и интернет</dd></div><div><dt>Стадия продукта</dt><dd>Preview</dd></div></dl>
+          <p class="download-note">Установщики и сведения о конкретном выпуске публикуются в GitHub Releases.</p>
+        </div>
+      </div>
+    </section>
+    <section class="faq-section" id="faq">
+      <div class="wrap faq-grid">
+        <div class="faq-heading"><div class="eyebrow">Полезно знать</div><h2>Перед первым<br>запуском.</h2><p>NEXADE развивается. Здесь — возможности и ограничения текущего Preview.</p></div>
+        <div class="faq-list">
+          <details><summary>Как работать с несколькими агентами?</summary><p>Добавляйте в проект агентов разных специализаций и распределяйте задачи по ролям. Диалоги, сообщения между агентами и результаты доступны в контексте проекта и выбранного DevTrack.</p></details>
+          <details><summary>Где хранятся мои проекты?</summary><p>Проекты, рабочие копии и локальная история находятся на вашем компьютере. При обращении к AI необходимый контекст отправляется выбранному провайдеру в рамках его настроек и разрешений.</p></details>
+          <details><summary>Зачем создавать отдельный DevTrack?</summary><p>DevTrack выделяет задаче свою рабочую копию проекта. В ней можно развивать новую функцию или исследовать подход, сохраняя отдельные диалоги и историю изменений.</p></details>
+          <details><summary>Чем сценарий отличается от обычного диалога?</summary><p>В сценарии задан порядок этапов, участники и условия переходов. Этап человека может ждать текстовый результат вашей работы, а AI-этап — использовать инструкции и навыки выбранных ролей. Запуск работает по закреплённой версии. AI-исполнители работают последовательно; возвраты ограничены настройками схемы.</p></details>
+          <details><summary>Можно дать агенту доступ к серверу или базе?</summary><p>Да, через соответствующие инструменты и права профиля подключения. Для БД по умолчанию используется чтение; изменения требуют отдельного разрешения. Для SSH, AWS SSM и WinRM нужны настроенные доступы и компоненты выбранного транспорта.</p></details>
+          <details><summary>Что переносится между компьютерами?</summary><p>Синхронизация передаёт проекты и DevTrack, переносимую историю, сохранённые сценарии и настройки. Память, почта, авторизация и внутренние сеансы AI не переносятся. Дождитесь завершения передачи облачным клиентом и настройте доступ на другом устройстве. Не запускайте обмен одновременно с двух компьютеров.</p></details>
+          <details><summary>Можно ли выполнять любой SQL?</summary><p>Редактор обрабатывает один запрос за действие и проверяет поддерживаемую структуру. По умолчанию используется чтение; запись требует разрешённого профиля и подтверждения. Ограничения NEXADE дополняют права самой базы.</p></details>
+          <details><summary>Можно ли узнать расход токенов и стоимость?</summary><p>Панель агента и трассировка показывают сообщённые провайдером токены. Неизвестные и неполные данные явно обозначаются. Денежная оценка по выбранным тарифам находится в разработке; она будет отличаться от фактического списания или стоимости подписки.</p></details>
+          <details><summary>Что восстанавливает локальный снимок?</summary><p>Сохранённые файлы восстанавливаются в новой папке. Состояние внешней базы, удалённого сервиса или запущенного процесса этим не откатывается. Локальные снимки не зашифрованы и могут содержать секреты проекта. Синхронизация не заменяет независимую резервную копию.</p></details>
+          <details><summary>Будут ли автоматические обновления?</summary><p>Автоматические обновления запланированы. В текущем Preview новая версия устанавливается вручную. Публичный канал релизов и загрузка обновлений будут подключены отдельно.</p></details>
+          <details><summary>Что означает Preview?</summary><p>Это рабочая предварительная версия. Функции и интерфейс ещё развиваются; перед важными изменениями проверяйте результат и сохраняйте резервные копии проекта.</p></details>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap"><div class="footer-main"><a href="#top" aria-label="NEXADE — в начало"><img class="wordmark" src="assets/wordmark.png" alt="NEXADE"></a><p>От задачи — к проверенному результату с AI-агентами.</p><a href="#download">Попробовать Preview ↗</a></div><div class="footer-sub"><span>© 2026 NEXADE</span><span>Проекты, роли и инструменты для вашей работы с AI</span></div></div>
+  </footer>
+<dialog id="image-dialog" class="lightbox" aria-label="Крупный снимок интерфейса NEXADE"><div class="lightbox-head"><span id="image-dialog-title">Рабочая область</span><button aria-label="Закрыть снимок" data-close-dialog><svg class="icon"><use href="#i-close"/></svg></button></div><img id="large-image" alt="Снимок интерфейса NEXADE"></dialog>
+  <script>
+    const screens = {
+      workspace: {src:"assets/workspace.png",title:"Рабочая область",alt:"Рабочая область NEXADE: проекты, DevTrack, агенты, диалог и файлы",caption:"Проект, задача, агент и файлы — в одном рабочем пространстве."},
+      ideas: {src:"assets/ideas.png",title:"Idea Radar",alt:"Idea Radar NEXADE с идеями, сигналами и темами",caption:"Собирайте идеи и исходные сигналы до постановки задачи."},
+      backlog: {src:"assets/backlog.png",title:"Backlog",alt:"Доска Backlog NEXADE с колонками задач и фильтрами",caption:"Идеи и задачи становятся понятным планом работы."},
+      scenarios: {src:"assets/scenarios.png",title:"Визуальные сценарии",alt:"Схема работы AI и человека в NEXADE",caption:"Назначайте роли, этапы и решения человека на визуальной схеме."},
+      memory: {src:"assets/memory.png",title:"Память",alt:"Память NEXADE с поиском и графом связанных записей",caption:"Сохраняйте знания и решения, связывайте их и возвращайтесь к контексту."},
+      databases: {src:"assets/databases.png",title:"Базы данных",alt:"Схема и SQL-запрос к тестовой базе в NEXADE",caption:"Открывайте схему и проверяйте данные приложения с учётом прав."},
+      servers: {src:"assets/servers.png",title:"Серверы",alt:"Страница подключений к серверам NEXADE",caption:"Подключения к окружению проекта, терминал, команды и файлы."},
+      skills: {src:"assets/skills.png",title:"Навыки",alt:"Библиотека управляемых навыков NEXADE",caption:"Подключайте инструкции и материалы, выбирайте совместимые редакции."},
+      agents: {src:"assets/agents.png",title:"Библиотека агентов",alt:"Библиотека ролей и карточка агента NEXADE",caption:"33 роли NEXADE и 283 роли agency-agents для разных специализаций."},
+      trace: {src:"assets/trace.png",title:"Трассировка сессии",alt:"Трассировка NEXADE: графики наблюдений и токенов сессии",caption:"Возвращайтесь к ходам сессии и смотрите, что делал агент."}
+    };
+    let currentScreen = "workspace";
+    const tabs = Array.from(document.querySelectorAll(".screen-tab"));
+    function setScreen(key, focus) {
+      const screen = screens[key]; if (!screen) return;
+      currentScreen = key;
+      tabs.forEach(function(tab) {
+        const selected=tab.dataset.screen===key;
+        tab.setAttribute("aria-selected",String(selected));tab.tabIndex=selected?0:-1;
+        if(selected){
+          if(focus)tab.focus({preventScroll:true});
+          const strip=tab.parentElement;
+          if(strip.scrollWidth>strip.clientWidth)strip.scrollLeft=Math.max(0,tab.offsetLeft-strip.offsetLeft-(strip.clientWidth-tab.offsetWidth)/2);
+        }
+      });
+      document.getElementById("screen-image").src = screen.src;
+      document.getElementById("screen-image").alt = screen.alt;
+      document.getElementById("screen-title").textContent = screen.title;
+      document.getElementById("screen-caption").textContent = screen.caption;
+      document.getElementById("screen-panel").setAttribute("aria-labelledby","tab-"+key);
+      document.querySelector(".screen-image-button").setAttribute("aria-label","Открыть крупный снимок: "+screen.title);
+    }
+    tabs.forEach(function(tab,index) {
+      tab.addEventListener("click",function(){setScreen(tab.dataset.screen,false);});
+      tab.addEventListener("keydown",function(event) {
+        let target = index;
+        if(event.key==="ArrowRight") target=(index+1)%tabs.length;
+        else if(event.key==="ArrowLeft") target=(index+tabs.length-1)%tabs.length;
+        else if(event.key==="Home") target=0;
+        else if(event.key==="End") target=tabs.length-1;
+        else return;
+        event.preventDefault();setScreen(tabs[target].dataset.screen,true);
+      });
+    });
+    document.querySelectorAll("[data-show-screen]").forEach(function(link){link.addEventListener("click",function(){setScreen(link.dataset.showScreen,false);});});
+    function showImage(src,title,alt) {
+      document.getElementById("large-image").src=src;document.getElementById("large-image").alt=alt;
+      document.getElementById("image-dialog-title").textContent=title;
+      document.getElementById("image-dialog").showModal();
+    }
+    function enlarge() {const screen=screens[currentScreen];showImage(screen.src,screen.title,screen.alt);}
+    document.querySelectorAll("[data-preview-image]").forEach(function(button){button.addEventListener("click",function(){const img=button.querySelector("img");showImage(img.src,button.dataset.previewTitle,img.alt);});});
+    document.querySelector(".screen-image-button").addEventListener("click",enlarge);
+    document.querySelector(".screen-zoom").addEventListener("click",enlarge);
+
+    document.querySelectorAll("[data-close-dialog]").forEach(function(button){button.addEventListener("click",function(){button.closest("dialog").close();});});
+    document.querySelectorAll("dialog").forEach(function(dialog){dialog.addEventListener("click",function(event){if(event.target!==dialog) return;const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom) dialog.close();});});
+    const menuButton=document.querySelector(".menu-toggle");
+    function closeMenu(){document.getElementById("main-nav").dataset.open="false";menuButton.setAttribute("aria-expanded","false");}
+    menuButton.addEventListener("click",function(){const open=menuButton.getAttribute("aria-expanded")!=="true";menuButton.setAttribute("aria-expanded",String(open));document.getElementById("main-nav").dataset.open=String(open);});
+    document.querySelectorAll("#main-nav a").forEach(function(link){link.addEventListener("click",closeMenu);});
+    document.addEventListener("keydown",function(event){if(event.key==="Escape") closeMenu();});
+  </script>
+</body>
+</html>
